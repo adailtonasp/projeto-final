@@ -1,6 +1,3 @@
-const jwt = require("jsonwebtoken");
-const JWT_SECRET = process.env.JWT_SECRET || "seuSuperSegredo";
-
 function logRequest(req, res, next) {
   const now = new Date().toISOString();
   console.log(`[${now}] Requisição recebida: ${req.method} ${req.path}`);
@@ -26,35 +23,8 @@ function logSuccess(req, res, next) {
   next();
 }
 
-function validateLoginRequest(req, res, next) {
-  const { email, senha } = req.body;
-  if (!email || !senha) {
-    return res.status(400).send({ mensagem: "Email e senha são obrigatórios" });
-  }
-  next();
-}
-
-function verifyAuthToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).send({ mensagem: "Token de acesso necessário" });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).send({ mensagem: "Token inválido ou expirado" });
-    }
-    req.usuarioId = decoded.id;
-    next();
-  });
-}
-
 module.exports = {
   logRequest,
   validateRequestBody,
-  logSuccess,
-  validateLoginRequest,
-  verifyAuthToken,
+  logSuccess
 };
